@@ -21,7 +21,8 @@ boolean moving = false;
 float speed = 5;
 int catMoveFrame = 0;
 
-String catMessage = "Welcome to Luna's World";
+String catMessage = "Welcome to Luna's Room!";
+String lunaMood = "Happy";
 
 // play button properties
 float btnX = 225;
@@ -73,6 +74,7 @@ void draw() {
   text("*", 110, 200);
   text("*", 490, 230);
 
+
   if (insideTitleScreen == true) {
     // Title screen
     fill(120, 60, 100);
@@ -92,6 +94,8 @@ void draw() {
     rect(225, 350, 150, 55, 15);
 
     fill(255);
+    stroke(120, 80, 160);
+    strokeWeight(3);
     textSize(22);
     text("START", 300, 378);
   } 
@@ -101,19 +105,63 @@ void draw() {
     fill (120, 60, 100);
     textSize(30);
     text("Luna's Room", 300, 50);
-    image(cat, 200 + x, 120, 200, 200);
     textSize(18);
-    text(catMessage, 300, 330);
+    
+    image(cat, 200 + x, 120, 200, 200);
+    
+    //speech bubble
+    fill(252, 193, 211);
+    stroke(255, 145, 164);
+    strokeWeight(2);
+    //    x    y    w    h   rc
+    rect(390, 120, 190, 45, 12);
+    
+    //small triangle under the bubble
+    //        x1   y1   x2   y2   x3   y3
+    triangle(430, 165, 450, 165, 420, 180);
+    
+    //message inside the bubble
+    fill(100, 60, 100);
+    textSize(14);
+    text(catMessage, 485, 143);
+    
+    noStroke();
+    
+    //checking luna's mood
+    if (energy < 25){
+      lunaMood = "Sleepy";
+    }
+    
+    else if (hunger < 25){
+      lunaMood = "Hungry";
+    }
+    
+    else {
+      lunaMood = "Happy";
+    }
+    
+    if (lunaMood.equals("Sleepy")){
+      catMessage = "I need a little nap...";
+    }
+    
+    else if (lunaMood.equals("Hungry")){
+      catMessage = "Can I have some food??";
+    }
+    
+   
 
     // Luna's stats
     fill(150, 100, 200);
     textSize(16);
-    text("Hunger: " + hunger, 100, 90);
-    text("Happiness: " + happiness, 300, 90);
-    text("Energy: " + energy, 500, 90);
+    text("Hunger: " + hunger, 90, 90);
+    text("Happiness: " + happiness, 230, 90);
+    text("Energy: " + energy, 370, 90);
+    text("Mood: " + lunaMood, 500, 90);
 
     //feed button
     fill(250, 159, 237);
+    stroke(225, 143, 213);
+    strokeWeight(3);
     rect(35, 360, 150, 50, 12);
 
     fill(255);
@@ -122,6 +170,8 @@ void draw() {
 
     //play button
     fill(230, 175, 222);
+    stroke(207, 158, 200);
+    strokeWeight(3);
     rect(225, 360, 150, 50, 12);
 
     fill(255);
@@ -143,6 +193,8 @@ void draw() {
 
     //sleep button
     fill(217, 128, 204);
+    stroke(195, 115, 184);
+    strokeWeight(3);
     rect(415, 360, 150, 50, 12);
 
     fill(255);
@@ -162,32 +214,47 @@ void mousePressed() {
     //feed button click control
     if (mouseX > 35 && mouseX < 185 && mouseY > 360 && mouseY < 410) {
       
+      //makes the cat message say thank you
+      catMessage = "Yummy! Thank you!";
+      
       //reduces the hunger when the feed button is clicked
       hunger = hunger - 5;
-      catMessage = "Yum! Luna is happy";
 
      //keeps hunger from going below zero
       if (hunger < 0) {
         hunger = 0;
       }
+      
+      if (hunger > 100){
+        hunger = 100;
+      }
     }
     //play button click control
     else if (mouseX > 225 && mouseX < 375 && mouseY > 360 && mouseY < 410) {
       
+      //makes the cat message say let's play
+      catMessage = "Yay! Let's play";
+      
       //increases happiness and reducing energy when she is playing
-      happiness = happiness + 10;
-      energy = energy - 10;
-      hunger = hunger + 5;
+      happiness = happiness + 5;
+      energy = energy - 5;
+      
+      if (happiness < 0){
+        happiness = 0;
+      }
 
       //happiness can't go past 100
       if (happiness > 100) {
         happiness = 100;
       }
       
+     
       //energy can't go below zero
       if (energy < 0) {
         energy = 0;
       }
+      
+      
       //switches movement on or off when PLAY is clicked
       moving = !moving;
       
@@ -198,8 +265,15 @@ void mousePressed() {
     //sleep button click control
     else if (mouseX > 415 && mouseX < 565 && mouseY > 360 && mouseY < 410) {
       
+      //makes the cat message say, i'm getting sleepy
+      catMessage = "Zzzzzzzz";
+      
       //increases energy whe sleep is clicked
-      energy = energy + 10;
+      energy = energy + 5;
     }
+    //energy can't go above 100
+    if (energy > 100) {
+        energy = 100;
+      }
   }
 }
