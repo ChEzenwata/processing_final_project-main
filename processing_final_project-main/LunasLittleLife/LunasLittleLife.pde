@@ -15,6 +15,9 @@ int hunger = 50;
 int happiness = 50;
 int energy = 50;
 
+int day = 1;
+boolean gameOver = false;
+
 //controls luna's movements
 float x, y;
 boolean moving = false;
@@ -23,6 +26,7 @@ int catMoveFrame = 0;
 
 String catMessage = "Welcome to Luna's Room!";
 String lunaMood = "Happy";
+String finalRating = "";
 
 // play button properties
 float btnX = 225;
@@ -35,7 +39,7 @@ void setup() {
   textAlign(CENTER, CENTER);
 
   cat = loadImage("cute-cat.png");
-  
+
   //sets the cat's starting position
   x = cat.width/2 - cat.width/2;
   y = cat.height/2 - cat.height/2;
@@ -98,57 +102,137 @@ void draw() {
     strokeWeight(3);
     textSize(22);
     text("START", 300, 378);
-  } 
-  else {
+  } else if (gameOver == true) {
+    // Ending screen
+    fill(120, 60, 100);
+    textSize(34);
+    text("Luna's Little Life", 300, 55);
+
+    textSize(23);
+    text("Your adventure is complete!", 300, 200);
+
+    // Caretaker rating
+    textSize(22);
+    fill(170, 100, 160);
+    text(finalRating, 300, 250);
+
+    // Days completed
+    fill(120, 60, 100);
+    textSize(18);
+    text("Days completed: 5", 300, 310);
+
+    // LUNA'S STATS
+    fill(150, 100, 200);
+    textSize(16);
+
+    // shows Luna's current hunger value
+    text("Hunger: " + hunger, 90, 90);
+
+    // HUNGER BAR BACKGROUND
+    // Draws the grey bar behind the pink bar
+    fill(220, 200, 220);
+    rect(35, 105, 110, 12, 6);
+
+    // HUNGER BAR
+    // The pink bar changes width depending on Luna's hunger
+    fill(255, 145, 164);
+
+    // Multiplies hunger by 1.1 so the bar can reach 110 pixels
+    // when hunger reaches 100
+    rect(35, 105, hunger * 1.1, 12, 6);
+
+    // shows Luna's current happiness
+    text("Happiness: " + happiness, 230, 90);
+
+    // HAPPINESS BAR BACKGROUND
+    // Draws the grey background behind the bar
+    fill(220, 200, 220);
+    rect(175, 105, 110, 12, 6);
+
+    // HAPPINESS BAR
+    // The purple bar changes width depending on Luna's happiness
+    fill(170, 100, 220);
+
+    // Multiplies happiness by 1.1 to make the maximum width 110 pixels
+    rect(175, 105, happiness * 1.1, 12, 6);
+
+
+    // showss Luna's current energy
+    fill(150, 100, 200);
+    text("Energy: " + energy, 370, 90);
+
+    // ENERGY BAR BACKGROUND
+    // Draws the grey background behind the bar
+    fill(220, 200, 220);
+    rect(315, 105, 110, 12, 6);
+
+    // ENERGY BAR
+    // The blue bar changes width depending on Luna's energy
+    fill(120, 170, 230);
+
+    // Multiplies energy by 1.1 to make the maximum width 110 pixels
+    rect(315, 105, energy * 1.1, 12, 6);
+
+    // shows Luna's current mood
+    text("Mood: " + lunaMood, 500, 90);
+
+    // PLAY AGAIN button
+    fill(255, 145, 164);
+    stroke(230, 131, 148);
+    strokeWeight(3);
+    rect(225, 360, 150, 50, 12);
+
+    fill(255);
+    textSize(18);
+    text("PLAY AGAIN", 300, 385);
+  } else {
     //main game screen
     background(255, 230, 240);
     fill (120, 60, 100);
     textSize(30);
     text("Luna's Room", 300, 50);
-    textSize(18);
-    
+    textSize(20);
+    text ("Day: " + day, 50, 50);
+
     image(cat, 200 + x, 120, 200, 200);
-    
+
     //speech bubble
     fill(252, 193, 211);
     stroke(255, 145, 164);
     strokeWeight(2);
     //    x    y    w    h   rc
     rect(390, 120, 190, 45, 12);
-    
+
     //small triangle under the bubble
     //        x1   y1   x2   y2   x3   y3
     triangle(430, 165, 450, 165, 420, 180);
-    
+
     //message inside the bubble
     fill(100, 60, 100);
     textSize(14);
     text(catMessage, 485, 143);
-    
+
     noStroke();
-    
+
     //checking luna's mood
-    if (energy < 25){
+    if (energy < 2) {
       lunaMood = "Sleepy";
-    }
-    
-    else if (hunger < 25){
+    } else if (hunger < 25) {
       lunaMood = "Hungry";
-    }
-    
-    else {
+    } else if (happiness < 25) {
+      lunaMood = "Unhappy";
+    } else {
       lunaMood = "Happy";
     }
-    
-    if (lunaMood.equals("Sleepy")){
+
+    if (lunaMood.equals("Sleepy")) {
       catMessage = "I need a little nap...";
-    }
-    
-    else if (lunaMood.equals("Hungry")){
+    } else if (lunaMood.equals("Hungry")) {
       catMessage = "Can I have some food??";
+    } else if (lunaMood.equals("Unhappy")) {
+      catMessage = "I need some attention...";
     }
-    
-   
+
 
     // Luna's stats
     fill(150, 100, 200);
@@ -176,11 +260,11 @@ void draw() {
 
     fill(255);
     text("PLAY", btnX + btnW/2, btnY + btnH/2);
-    
+
     //moves the cat while moving is true
     if (moving) {
       catMoveFrame++;
-      
+
       //controls how often the cat changes position, if i make the number higher it moves less often and vice versa
       catMoveFrame %= 10;
       if (catMoveFrame == 0) {
@@ -202,78 +286,114 @@ void draw() {
   }
 }
 
+
 void mousePressed() {
+
+  //TITLE SCREEN
   if (insideTitleScreen == true) {
-    // the first mouseX is my x value, the second is the x value plus width. the first mouseY is my y value and the second is y plus height.
+
     if (mouseX > 225 && mouseX < 375 &&
       mouseY > 350 && mouseY < 405) {
       insideTitleScreen = false;
     }
-  } 
-  else {
-    //feed button click control
-    if (mouseX > 35 && mouseX < 185 && mouseY > 360 && mouseY < 410) {
-      
-      //makes the cat message say thank you
-      catMessage = "Yummy! Thank you!";
-      
-      //reduces the hunger when the feed button is clicked
-      hunger = hunger - 5;
+  }
 
-     //keeps hunger from going below zero
-      if (hunger < 0) {
-        hunger = 0;
-      }
-      
-      if (hunger > 100){
+  //ENDING SCREEN
+  else if (gameOver == true) {
+
+    //PLAY AGAIN button
+    if (mouseX > 225 && mouseX < 375 &&
+      mouseY > 360 && mouseY < 410) {
+
+      //resets all stats
+      hunger = 50;
+      happiness = 50;
+      energy = 50;
+
+      //resets the day
+      day = 1;
+
+      //starts the game again
+      gameOver = false;
+
+      //resets movement
+      moving = false;
+      x = 0;
+      speed = 5;
+      catMoveFrame = 0;
+
+      //resets mood and message
+      catMessage = "Welcome back!";
+      lunaMood = "Happy";
+    }
+  }
+
+  //MAIN GAME SCREEN
+  else {
+
+    //FEED BUTTON
+    if (mouseX > 35 && mouseX < 185 &&
+      mouseY > 360 && mouseY < 410) {
+
+      catMessage = "Yummy! Thank you!";
+      hunger = hunger + 5;
+
+      if (hunger > 100) {
         hunger = 100;
       }
     }
-    //play button click control
-    else if (mouseX > 225 && mouseX < 375 && mouseY > 360 && mouseY < 410) {
-      
-      //makes the cat message say let's play
+
+    //PLAY BUTTON
+    else if (mouseX > 225 && mouseX < 375 &&
+      mouseY > 360 && mouseY < 410) {
+
       catMessage = "Yay! Let's play";
-      
-      //increases happiness and reducing energy when she is playing
+
       happiness = happiness + 5;
       energy = energy - 5;
-      
-      if (happiness < 0){
-        happiness = 0;
-      }
 
-      //happiness can't go past 100
       if (happiness > 100) {
         happiness = 100;
       }
-      
-     
-      //energy can't go below zero
+
       if (energy < 0) {
         energy = 0;
       }
-      
-      
-      //switches movement on or off when PLAY is clicked
+
       moving = !moving;
-      
       println(moving);
     }
-    
-    
-    //sleep button click control
-    else if (mouseX > 415 && mouseX < 565 && mouseY > 360 && mouseY < 410) {
-      
-      //makes the cat message say, i'm getting sleepy
-      catMessage = "Zzzzzzzz";
-      
-      //increases energy whe sleep is clicked
-      energy = energy + 5;
-    }
-    //energy can't go above 100
-    if (energy > 100) {
+
+    //SLEEP BUTTON
+    else if (mouseX > 415 && mouseX < 565 &&
+      mouseY > 360 && mouseY < 410) {
+
+      energy = energy + 20;
+
+      if (energy > 100) {
         energy = 100;
       }
+
+      if (day == 5) {
+
+        //calculates Luna's final score
+        int finalScore = hunger + happiness + energy;
+
+        //decides the user caretaking rating
+        if (finalScore >= 210) {
+          finalRating = "You were an Amazing Caretaker!";
+        } else if (finalScore >= 120) {
+          finalRating = " You were a Good Caretaker!";
+        } else {
+          finalRating = "Luna Needs More Love!";
+        }
+
+        catMessage = "Our adventure is complete!!!";
+        gameOver = true;
+      } else {
+        catMessage = "Day " + day + " complete!";
+        day = day + 1;
+      }
+    }
   }
 }
